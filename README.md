@@ -5,6 +5,10 @@ Falling Sand Simulation with Magic Dust
 
 This project is an interactive falling sand simulation built using Pygame, where you can create and observe the behavior of different particles such as sand, water, and "Magic Dust." The simulation allows you to control gravity, wind, and grid size dynamically, as well as choose from different types of Magic Dust for added visual effects.
 
+Prerequisite Install:
+
+>pip install pygame
+
 Features:
 
 Particles: Sand, Water, and Magic Dust particles with unique behaviors.
