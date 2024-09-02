@@ -1,5 +1,6 @@
 <img width="1190" alt="Screenshot 2024-08-05 at 7 19 46 PM" src="https://github.com/user-attachments/assets/c8f19175-d9f5-4e78-b447-1373de4f3a92">
-
+<img width="1194" alt="Screenshot 2024-08-05 at 7 08 26 PM" src="https://github.com/user-attachments/assets/d609de4b-3016-47c0-8787-d45733378c9c">
+<img width="1196" alt="Screenshot 2024-08-05 at 10 41 41 PM" src="https://github.com/user-attachments/assets/bf4d9174-da73-4428-a078-11d2fd1b8ad8">
 
 Falling Sand Simulation with Magic Dust
 
