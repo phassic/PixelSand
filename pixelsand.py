@@ -24,6 +24,48 @@ MAGIC_DUST_TYPES = {
     "Rainbow Mist": [(255, 0, 255), (0, 255, 255), (255, 105, 180)]  # Vibrant neon colors
 }
 
+# Additional Sand Colors
+ADDITIONAL_SAND_COLORS = [
+    # Reds/Pinks/Magentas
+    (255, 0, 50),     # Neon Red (Dynamic and bold)
+    (255, 51, 0),     # Neon Coral (Energetic and bold)
+    (255, 0, 150),    # Neon Pink (Striking and vibrant)
+    (255, 40, 200),   # Hot Pink (Playful and fun)
+    (255, 51, 153),   # Neon Rose (Vivid and romantic)
+    (255, 0, 255),    # Neon Fuchsia (Intense and eye-catching)
+    (255, 20, 255),   # Vibrant Magenta (Electric and exciting)
+    (255, 80, 255),   # Fuchsia (Vibrant and eye-catching)
+
+    # Oranges/Peaches/Golds
+    (255, 90, 0),     # Neon Orange (Bold and lively)
+    (255, 150, 0),    # Tangerine (Juicy and energetic)
+    (255, 153, 51),   # Neon Peach (Soft yet vivid)
+    (255, 180, 0),    # Vibrant Gold (Rich and warm)
+    (255, 204, 0),    # Neon Amber (Warm and radiant)
+
+    # Yellows/Limes
+    (255, 240, 0),    # Neon Lemon (Bright and cheerful)
+    (255, 255, 0),    # Bright Yellow (Sunny and joyful)
+    (100, 255, 0),    # Lime Green (Fresh and lively)
+    (0, 255, 64),     # Electric Lime (Bright and zesty)
+
+    # Greens/Turquoises/Cyans
+    (0, 255, 130),    # Electric Green (Bright and fresh)
+    (0, 255, 180),    # Mint Green (Refreshing and cool)
+    (0, 255, 240),    # Neon Turquoise (Bright and tropical)
+    (0, 255, 255),    # Neon Cyan (Bright and electrifying)
+    (0, 240, 255),    # Neon Aqua (Cool and energetic)
+    (0, 200, 255),    # Sky Blue (Bright and expansive)
+
+    # Blues/Indigos/Purples
+    (0, 130, 255),    # Neon Blue (Bright and captivating)
+    (0, 102, 255),    # Neon Royal Blue (Rich and intense)
+    (120, 0, 255),    # Vibrant Indigo (Mystical and deep)
+    (180, 30, 255),   # Deep Violet (Creative and bold)
+    (240, 0, 255),    # Electric Purple (Vivid and striking)
+    (255, 102, 204),  # Neon Lavender (Playful and bright)
+    (255, 0, 255),    # Ultra Violet (Deep and vibrant)
+]
 # Initial settings
 GRID_SIZE = 5
 
@@ -40,11 +82,14 @@ WATER = 2
 MAGIC_DUST = 3
 
 # Initial gravity and wind settings
-gravity_strength = 0
-wind_strength = 1
+gravity_strength = 1
+wind_strength = 0
 
 # Current Magic Dust type
 current_magic_dust = "Star Dust"
+current_sand_color = pygame.Color(0)  # Start with default color
+use_dynamic_rainbow_hue = True  # Start with dynamic rainbow hue active
+hue = 0  # Initial hue value
 
 # Slider class
 class Slider:
@@ -175,8 +220,11 @@ magic_dust_picker = {
     "Rainbow Mist": pygame.Rect(350, HEIGHT - 120, 100, 40)
 }
 
-# Hue for sand color cycling
-hue = 0
+# Sand Color Picker including Dynamic Rainbow Hue
+sand_color_picker = [(pygame.Color(0), pygame.Rect(50, HEIGHT - 140, 25, 15.45))]  # Dynamic Rainbow Hue option first
+for i, color in enumerate(ADDITIONAL_SAND_COLORS):
+    rect = pygame.Rect(90 + i * 40, HEIGHT - 140, 25, 15.45)
+    sand_color_picker.append((color, rect))
 
 # Thread to update particles
 def update_particles(x_start, x_end):
@@ -202,6 +250,13 @@ while running:
             for dust_name, rect in magic_dust_picker.items():
                 if rect.collidepoint(event.pos):
                     current_magic_dust = dust_name
+            for i, (color, rect) in enumerate(sand_color_picker):
+                if rect.collidepoint(event.pos):
+                    if i == 0:  # If the first button (dynamic rainbow hue) is clicked
+                        use_dynamic_rainbow_hue = True
+                    else:
+                        use_dynamic_rainbow_hue = False
+                        current_sand_color = color
 
     # Handle mouse input
     mouse_buttons = pygame.mouse.get_pressed()
@@ -214,11 +269,13 @@ while running:
                 if magic_dust_active:
                     grid[grid_x][grid_y] = Particle(grid_x, grid_y, MAGIC_DUST, random.choice(MAGIC_DUST_TYPES[current_magic_dust]), glued=glue_active)
                 else:
-                    # Convert HSV to RGB for the rainbow effect
-                    color = pygame.Color(0)
-                    color.hsva = (hue % 360, 100, 100, 100)
+                    if use_dynamic_rainbow_hue:
+                        color = pygame.Color(0)
+                        color.hsva = (hue % 360, 100, 100, 100)
+                        hue += 1  # Increment hue for the next particle
+                    else:
+                        color = current_sand_color
                     grid[grid_x][grid_y] = Particle(grid_x, grid_y, SAND, color, glued=glue_active)
-                    hue += 1  # Increment hue for the next particle
 
     if mouse_buttons[2]:  # Right mouse button for water
         grid_x, grid_y = mouse_x // GRID_SIZE, mouse_y // GRID_SIZE
@@ -290,8 +347,13 @@ while running:
         dust_label = font.render(dust_name, True, BLACK)
         screen.blit(dust_label, (rect.x + 10, rect.y + 10))
 
+    # Draw Sand Color Picker
+    for i, (color, rect) in enumerate(sand_color_picker):
+        pygame.draw.rect(screen, color, rect)
+        if (use_dynamic_rainbow_hue and i == 0) or (color == current_sand_color and not use_dynamic_rainbow_hue):
+            pygame.draw.rect(screen, WHITE, rect, 3)  # Highlight the selected color or dynamic rainbow hue option
+
     pygame.display.flip()
     clock.tick(60)
 
 pygame.quit()
-
